@@ -34,9 +34,9 @@ args = dotdict({
 
 def main():
     log.info('Loading %s...', Game.__name__)
-    sys.setrecursionlimit(1000)
+    sys.setrecursionlimit(10000)
     # g = Game(7, 11)
-    g = Game(5, 7)
+    g = Game(5, 8)
 
     log.info('Loading %s...', nn.__name__)
     nnet = nn(g)

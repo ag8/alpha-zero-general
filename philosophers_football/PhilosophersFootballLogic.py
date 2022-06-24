@@ -29,6 +29,8 @@ class Board():
         # Set up the initial location of the football.
         self.pieces[int(self.rows / 2)][int(self.cols / 2)] = 2
 
+        self.pieces[self.rows + 1] = [1] * self.cols  # first playerBerner
+
     # add [][] indexer syntax to the Board
     def __getitem__(self, index):
         return self.pieces[index]
@@ -38,21 +40,22 @@ class Board():
         (1 for white, -1 for black
         """
         moves = set()  # stores the legal moves.
+        player_already_hopped = self[self.rows][0] == 1
 
-        # First, all empty spots are valid moves to place a player.
-        for row in range(self.rows):
-            for col in range(self.cols):
-                if col == 0 or col == self.cols - 1:
-                    continue
+        # First, all empty spots are valid moves to place a player. (Unless the player has already started hopping).
+        if not player_already_hopped:
+            for row in range(self.rows):
+                for col in range(self.cols):
+                    if col == 0 or col == self.cols - 1:
+                        continue
 
-                if self[row][col] == 0:
-                    moves.add((row, col))
+                    if self[row][col] == 0:
+                        moves.add((row, col))
 
         # Next, all hops are valid moves.
         hops = self.get_hops()
 
         # Finally, "skipping" is only allowed if the player has already hopped.
-        player_already_hopped = self[self.rows][0] == 1
         others = [(2 * self.rows, 0)] if player_already_hopped else []
 
         return moves, hops, others
@@ -161,9 +164,18 @@ class Board():
         rdir = 1 if row > cur_row + 1 else -1
         cdir = 1 if col > cur_col + 1 else -1
 
-        for r in range(cur_row + 1, row, rdir):
+        # Remove players in the way
+
+        if cur_row == row:
             for c in range(cur_col + 1, col, cdir):
-                self[r][c] = 0  # Remove players in the way
+                self[row][c] = 0
+        elif cur_col == col:
+            for r in range(cur_row + 1, row, rdir):
+                self[r][col] = 0
+        else:
+            for r in range(cur_row + 1, row, rdir):
+                for c in range(cur_col + 1, col, cdir):
+                    self[r][c] = 0
 
         self[row][col] = 2  # Move the football
         self[cur_row][cur_col] = 0  # Remove it from the old place

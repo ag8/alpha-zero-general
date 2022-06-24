@@ -13,7 +13,7 @@ class RandomPlayer():
         return a
 
 
-class HumanOthelloPlayer():
+class HumanPhilosphersFootballPlayer():
     def __init__(self, game):
         self.game = game
 
@@ -22,14 +22,19 @@ class HumanOthelloPlayer():
         valid = self.game.getValidMoves(board, 1)
         for i in range(len(valid)):
             if valid[i]:
-                print("[", int((i % (self.game.rows * self.game.cols)) / self.game.cols), i % self.game.cols, "2 (hop)" if not (i % (self.game.rows * self.game.cols) == i) else "1 (place)", end="] ")
+                if i == 2 * self.game.rows * self.game.cols:
+                    print("[", 2 * self.game.rows, 0, "1 (end hopping)", end="] ")
+                else:
+                    print("[", int((i % (self.game.rows * self.game.cols)) / self.game.cols), i % self.game.cols,
+                      "2 (hop)" if not (i % (self.game.rows * self.game.cols) == i) else "1 (place)", end="] ")
         while True:
             input_move = input()
             input_a = input_move.split(" ")
             if len(input_a) == 3:
                 try:
                     x, y, z = [int(i) for i in input_a]
-                    a = self.game.cols * x + y if z == 1 else (self.game.rows * self.game.cols) + (self.game.cols * x + y)
+                    a = self.game.cols * x + y if z == 1 else (self.game.rows * self.game.cols) + (
+                                self.game.cols * x + y)
                     if valid[a]:
                         break
                 except ValueError:
@@ -39,7 +44,7 @@ class HumanOthelloPlayer():
         return a
 
 
-class GreedyOthelloPlayer():
+class GreedyPhilosphersFootballPlayer():
     def __init__(self, game):
         self.game = game
 

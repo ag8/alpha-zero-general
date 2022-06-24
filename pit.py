@@ -18,12 +18,12 @@ any agent.
 
 human_vs_cpu = True
 
-g = PhilosophersFootballGame(7, 11)
+g = PhilosophersFootballGame(5, 8)
 
 # all players
 rp = RandomPlayer(g).play
-gp = GreedyOthelloPlayer(g).play
-hp = HumanOthelloPlayer(g).play
+gp = GreedyPhilosphersFootballPlayer(g).play
+hp = HumanPhilosphersFootballPlayer(g).play
 
 
 

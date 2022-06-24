@@ -105,14 +105,14 @@ class PhilosophersFootballGame(Game):
 
     @staticmethod
     def display(board):
-        rows = len(board)
+        rows = len(board) - 2
         cols = len(board[0])
         print("   ", end="")
         for y in range(cols):
             print(y, end=" ")
         print("")
         print("-----------------------------")
-        for row in range(rows - 2):
+        for row in range(rows):
             print(chr(ord('A') + row), "|", end="")  # print the row name
             for col in range(cols):
                 if board[row][col] == 0:
@@ -124,4 +124,6 @@ class PhilosophersFootballGame(Game):
 
             print()
 
-        print("-----------------------------")
+        print("-----------------------------", end='')
+        print("    already hopped: " + str(board[rows][0] == 1), end='')
+        print("    turn player: " + str(board[rows + 1][0]))
