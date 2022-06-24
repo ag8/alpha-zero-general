@@ -119,7 +119,15 @@ class MCTS():
                     best_act = a
 
         a = best_act
-        next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
+        try:
+            next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
+        except RecursionError:
+            print("Recursion error!!")
+            print("Game state is this:")
+            self.game.display(canonicalBoard)
+            print()
+            print("Game board is this:")
+            print(canonicalBoard)
         next_s = self.game.getCanonicalForm(next_s, next_player)
 
         v = self.search(next_s)

@@ -78,6 +78,10 @@ class PhilosophersFootballGame(Game):
         # player = 1
         b = Board(self.rows, self.cols)
         b.pieces = np.copy(board)
+
+        if not b.has_legal_moves(1):
+            return 1e-4  # No more moves --> tie
+
         return b.get_winner()
 
     def getCanonicalForm(self, board, player):

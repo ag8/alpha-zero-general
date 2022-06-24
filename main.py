@@ -1,4 +1,5 @@
 import logging
+import sys
 
 import coloredlogs
 
@@ -33,7 +34,9 @@ args = dotdict({
 
 def main():
     log.info('Loading %s...', Game.__name__)
-    g = Game(7, 11)
+    sys.setrecursionlimit(1000)
+    # g = Game(7, 11)
+    g = Game(5, 7)
 
     log.info('Loading %s...', nn.__name__)
     nnet = nn(g)

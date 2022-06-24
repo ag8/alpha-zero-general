@@ -42,7 +42,7 @@ class Board():
         # First, all empty spots are valid moves to place a player.
         for row in range(self.rows):
             for col in range(self.cols):
-                if col == 0 or col == self.cols:
+                if col == 0 or col == self.cols - 1:
                     continue
 
                 if self[row][col] == 0:
@@ -69,6 +69,12 @@ class Board():
             # First, there must be a player to jump over.
             xp = x + direction[0]
             yp = y + direction[1]
+
+            if yp == 0 or yp == self.cols - 1:  # winning move
+                if self.in_bounds(xp, yp):
+                    hops.append((xp, yp))
+                continue
+
             if self.in_bounds(xp, yp):
                 if self[xp][yp] == 1:
                     # If there is, figure out how far we can jump in that direction.
@@ -84,11 +90,11 @@ class Board():
             xp += direction[0]
             yp += direction[1]
 
-            if yp == 0 or yp == self.cols - 1:  # winning move
-                return (xp, yp)
-
             if not self.in_bounds(xp, yp):
                 return None
+
+            if yp == 0 or yp == self.cols - 1:  # winning move
+                return (xp, yp)
 
         return (xp, yp) if self.in_bounds(xp, yp) else None
 
@@ -109,6 +115,9 @@ class Board():
 
         for row in range(self.rows):
             for col in range(self.cols):
+                if col == 0 or col == self.cols - 1:
+                    continue
+
                 if self[row][col] == 0:
                     return True
 
