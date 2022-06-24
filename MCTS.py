@@ -126,6 +126,8 @@ class MCTS():
             print("Game state is this:")
             self.game.display(canonicalBoard)
             print()
+            print("Attempted action was " + str(a))
+            print()
             print("Game board is this:")
             print(canonicalBoard)
         next_s = self.game.getCanonicalForm(next_s, next_player)

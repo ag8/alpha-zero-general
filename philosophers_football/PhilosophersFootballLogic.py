@@ -94,9 +94,12 @@ class Board():
                 return None
 
             if yp == 0 or yp == self.cols - 1:  # winning move
-                return (xp, yp)
+                if self[xp][yp] == 0:
+                    return (xp, yp)
+                else:
+                    return None
 
-        return (xp, yp) if self.in_bounds(xp, yp) else None
+        return (xp, yp) if self.in_bounds(xp, yp) and self[xp][yp] == 0 else None
 
     def in_bounds(self, row, col):
         return 0 <= row < self.rows
