@@ -7,7 +7,7 @@ import numpy as np
 
 class SantoriniGame(Game):
     """
-    Many of thes functions are based on those from OthelloGame.py:
+    Many of thes functions are based on those from PhilosophersFootballGame.py:
         https://github.com/suragnair/alpha-zero-general/blob/master/othello/OthelloGame.py
     """
     square_content = {
