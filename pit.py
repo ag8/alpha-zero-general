@@ -28,17 +28,17 @@ hp = HumanPhilosphersFootballPlayer(g).play
 
 
 # nnet players
-# n1 = NNet(g)
+n1 = NNet(g)
 # if mini_othello:
-#     n1.load_checkpoint('./pretrained_models/othello/pytorch/','6x100x25_best.pth.tar')
+n1.load_checkpoint('./temp/','temp.pth.tar')
 # else:
-#     n1.load_checkpoint('./pretrained_models/othello/pytorch/','8x8_100checkpoints_best.pth.tar')
-# args1 = dotdict({'numMCTSSims': 50, 'cpuct':1.0})
-# mcts1 = MCTS(g, n1, args1)
-# n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
-#
-# if human_vs_cpu:
-#     player2 = hp
+#     n1.load_checkpoint('./pretrained_models/othello/pytorch/','8x8_100checkpoints_best.pth.tar')2
+args1 = dotdict({'numMCTSSims': 50, 'cpuct':1.0})
+mcts1 = MCTS(g, n1, args1)
+n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
+
+if human_vs_cpu:
+    player2 = hp
 # else:
 #     n2 = NNet(g)
 #     n2.load_checkpoint('./pretrained_models/othello/pytorch/', '8x8_100checkpoints_best.pth.tar')
@@ -48,7 +48,7 @@ hp = HumanPhilosphersFootballPlayer(g).play
 #
 #     player2 = n2p  # Player 2 is neural network if it's cpu vs cpu.
 
-n1p = rp
+# n1p = rp
 player2 = hp
 
 arena = Arena.Arena(n1p, player2, g, display=PhilosophersFootballGame.display)

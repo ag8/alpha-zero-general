@@ -1,6 +1,6 @@
 import numpy as np
 
-# Renamed PhilosophersFootballPlayers.py Function
+# Renamed GravityChessPlayers.py Function
 class RandomPlayer():
     def __init__(self, game):
         self.game = game
@@ -34,7 +34,7 @@ class HumanSantoriniPlayer():
                 print("Sorry, that move is not valid. Please enter another.")
         return input_move
 
-# Renamed PhilosophersFootballPlayers.py Function
+# Renamed GravityChessPlayers.py Function
 class GreedySantoriniPlayer():
     def __init__(self, game):
         self.game = game
