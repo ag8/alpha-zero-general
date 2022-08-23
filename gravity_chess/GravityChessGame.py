@@ -10,84 +10,72 @@ import numpy as np
 
 
 class GravityChessGame(Game):
-    def __init__(self, rows, cols):
+    def __init__(self):
         super().__init__()
-        self.rows = rows
-        self.cols = cols
 
     def getInitBoard(self):
         # return initial board (numpy board)
-        b = Board(self.rows, self.cols)
+        b = Board()
         return np.array(b.pieces)
 
     def getBoardSize(self):
         # (a,b) tuple
-        return self.rows + 2, self.cols
+        return 8, 8
 
     def getActionSize(self):
         # return number of actions
-        return 2 * self.rows * self.cols + 1
+        return 8 * 8 * 8 * 8
 
     def getNextState(self, board, player, action):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
-        if action == 2 * self.rows * self.cols:
-            bq = Board(self.rows, self.cols)
-            bq.pieces = np.copy(board)
-            bq.pieces[self.rows] = [0] * self.cols  # reset hops
-            return bq.pieces, -player
-
-        b = Board(self.rows, self.cols)
+        b = Board()
         b.pieces = np.copy(board)
 
-        is_hop = not (action % (self.rows * self.cols) == action)
+        target_col = action % 8
+        action -= target_col
+        action /= 8
+        target_row = action % 8
+        action -= target_row
+        action /= 8
+        source_col = action % 8
+        action -= source_col
+        action /= 8
+        source_row = action
 
-        move = (int((action % (self.rows * self.cols)) / self.cols),  # row
-                action % self.cols,  # col
-                is_hop)  # is_hop
+        move = (source_row, source_col, target_row, target_col, player)
 
         b.execute_move(move, player)
 
-        return b.pieces, player if is_hop else -player
+        return b.pieces, -player
 
     def getValidMoves(self, board, player):
         # return a fixed size binary vector
         valids = [0] * self.getActionSize()
-        b = Board(self.rows, self.cols)
+        b = Board()
         b.pieces = np.copy(board)
 
-        moves, hops, others = b.get_legal_moves(player)
+        moves = b.get_legal_moves(player)
 
-        if len(moves) == 0:
-            valids[-1] = 1
-            return np.array(valids)
-
-        for x, y in moves:
-            valids[self.cols * x + y] = 1
-
-        for x, y in hops:
-            valids[self.rows * self.cols + self.cols * x + y] = 1
-
-        for x, y in others:
-            valids[-1] = 1
+        for a, b, c, d in moves:
+            valids[512 * a + 64 * b + 8 * c + d] = 1
 
         return np.array(valids)
 
     def getGameEnded(self, board, player):
         # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
         # player = 1
-        b = Board(self.rows, self.cols)
+        b = Board()
         b.pieces = np.copy(board)
 
-        if not b.has_legal_moves(1):
-            return 1e-4  # No more moves --> tie
+        if not b.is_tie():
+            return 1e-4
 
         return b.get_winner()
 
     def getCanonicalForm(self, board, player):
         b = copy.deepcopy(board)
-        b[self.rows + 1] = [player] * self.cols
-        return b
+        return b * player
 
     def getSymmetries(self, board, pi):
         # Vertical mirroring; omit for now
@@ -99,7 +87,7 @@ class GravityChessGame(Game):
         return board.tostring()
 
     def getScore(self, board, player):
-        b = Board(self.rows, self.cols)
+        b = Board()
         b.pieces = np.copy(board)
         return b.get_winner()
 
@@ -115,12 +103,38 @@ class GravityChessGame(Game):
         for row in range(rows):
             print(chr(ord('A') + row), "|", end="")  # print the row name
             for col in range(cols):
-                if board[row][col] == 0:
+                if board[row][col] is None:
                     print(". ", end='')
-                elif board[row][col] == 1:
-                    print("⬤ ", end='')
-                elif board[row][col] == 2:
-                    print("◯ ", end='')
+                elif board[row][col].type == 1:
+                    if board[row][col].color == 1:
+                        print("♙ ", end='')
+                    else:
+                        print("♟ ", end='')
+                elif board[row][col].type == 2:
+                    if board[row][col].color == 1:
+                        print("♘ ", end='')
+                    else:
+                        print("♞ ", end='')
+                elif board[row][col].type == 3:
+                    if board[row][col].color == 1:
+                        print("♗ ", end='')
+                    else:
+                        print("♝ ", end='')
+                elif board[row][col].type == 4:
+                    if board[row][col].color == 1:
+                        print("♖ ", end='')
+                    else:
+                        print("♜ ", end='')
+                elif board[row][col].type == 5:
+                    if board[row][col].color == 1:
+                        print("♕ ", end='')
+                    else:
+                        print("♛ ", end='')
+                elif board[row][col].type == 6:
+                    if board[row][col].color == 1:
+                        print("♔ ", end='')
+                    else:
+                        print("♚ ", end='')
 
             print()
 

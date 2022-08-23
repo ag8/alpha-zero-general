@@ -51,8 +51,9 @@ class Board():
             self.pieces.append(Piece(self._ROOK, i, 7, 1 if i is 0 else -1))
 
     # add [][] indexer syntax to the Board
-    # def __getitem__(self, index):
-    #     return self.pieces[index]
+    def __getitem__(self, tup):
+        y, x = tup
+        return self.get_piece_on(x, y)
 
     def get_piece_on(self, row, col):
         for piece in self.pieces:
@@ -527,6 +528,9 @@ class Board():
         # Check if the piece is a promoted pawn
         if current_piece.color == 1 and current_piece.row == 7 and current_piece.type == self._PAWN or current_piece.color == -1 and current_piece.row == 0 and current_piece.type == self._PAWN:
             current_piece.type = self._QUEEN  # for simplicity
+
+    def is_tie(self):
+        return False  # Todo implement
 
     def get_winner(self):
         white_lost = True
