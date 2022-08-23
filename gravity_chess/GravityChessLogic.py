@@ -11,6 +11,7 @@ Squares are stored and manipulated as (x,y) tuples.
 x is the column, y is the row.
 '''
 
+import numpy as np
 
 class Piece():
     def __init__(self, type, row, col, color):
@@ -47,11 +48,15 @@ class Board():
             self.pieces.append(Piece(self._KING, i, 3, 1 if i == 0 else -1))
             self.pieces.append(Piece(self._QUEEN, i, 4, 1 if i == 0 else -1))
             self.pieces.append(Piece(self._BISHOP, i, 5, 1 if i == 0 else -1))
-            self.pieces.append(Piece(self._KING, i, 6, 1 if i == 0 else -1))
+            self.pieces.append(Piece(self._KNIGHT, i, 6, 1 if i == 0 else -1))
             self.pieces.append(Piece(self._ROOK, i, 7, 1 if i == 0 else -1))
 
 
         # Other game state variables
+        # TODO: These game state variables currently:
+        # 1. don't get displayed canonically, and thus are unknown for the players
+        # 2. are not carried over during lookahad.
+        # both of these issues should be fixed.
         self.short_castling_allowed = True
         self.long_castling_allowed = True
         self.en_passant_allowed = True
@@ -457,7 +462,7 @@ class Board():
                 # Long castling
                 if self.get_piece_on(row, col + 1) is None and self.get_piece_on(row,
                                                                                  col + 2) is None and self.get_piece_on(
-                        row, col + 3) is None and self.long_casting_allowed:
+                        row, col + 3) is None and self.long_castling_allowed:
                     moves.append([row, col + 2])
 
                 # Short castling
@@ -477,7 +482,7 @@ class Board():
         for piece in self.pieces:
             if piece.color == color:  # if it's the right color
                 for move in self.get_moves(piece):
-                    moves.add([piece.row, piece.col, move[0], move[1]])
+                    moves.add((piece.row, piece.col, move[0], move[1]))
 
         return moves
 
@@ -493,12 +498,12 @@ class Board():
         captured_piece = self.get_piece_on(target_row, target_col)
 
         if captured_piece is not None:
-            self.pieces.remove(captured_piece)
+            self.pieces = np.delete(self.pieces, np.where(self.pieces == captured_piece))
 
         # Check for the french move
         if self.en_passant_allowed and target_row is self.en_passant_target_row and target_col is self.en_passant_target_col and current_piece.type is self._PAWN:
             frenched_pawn = self.get_piece_on(self.en_passant_target_row, self.en_passant_target_col)
-            self.pieces.remove(frenched_pawn)
+            self.pieces = np.delete(self.pieces, np.where(self.pieces == frenched_pawn))
 
         if current_piece.type is self._KING:
             self.short_castling_allowed = False

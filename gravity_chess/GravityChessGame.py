@@ -5,9 +5,18 @@ import sys
 
 sys.path.append('..')
 from Game import Game
-from .GravityChessLogic import Board
+from .GravityChessLogic import Board, Piece
 import numpy as np
 
+def pieces_from_canonical(canonical_board):
+    pieces = []
+
+    for row in range(8):
+        for col in range(8):
+            if abs(canonical_board[row][col]) > 0:
+                pieces.append(Piece(int(abs(canonical_board[row][col])), row, col, 1 if canonical_board[row][col] > 0 else -1))
+
+    return pieces
 
 class GravityChessGame(Game):
     def __init__(self):
@@ -30,20 +39,23 @@ class GravityChessGame(Game):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
         b = Board()
-        b.pieces = np.copy(board)
+        if isinstance(board[0], np.ndarray):
+            b.pieces = copy.deepcopy(pieces_from_canonical(board))
+        else:
+            b.pieces = copy.deepcopy(board)
 
-        target_col = action % 8
+        target_col = int(action % 8)
         action -= target_col
         action /= 8
-        target_row = action % 8
+        target_row = int(action % 8)
         action -= target_row
         action /= 8
-        source_col = action % 8
+        source_col = int(action % 8)
         action -= source_col
         action /= 8
-        source_row = action
+        source_row = int(action)
 
-        move = (source_row, source_col, target_row, target_col, player)
+        move = (source_row, source_col, target_row, target_col)
 
         b.execute_move(move, player)
 
@@ -53,12 +65,12 @@ class GravityChessGame(Game):
         # return a fixed size binary vector
         valids = [0] * self.getActionSize()
         b = Board()
-        b.pieces = np.copy(board)
+        b.pieces = copy.deepcopy(pieces_from_canonical(board))
 
         moves = b.get_legal_moves(player)
 
         for a, b, c, d in moves:
-            valids[512 * a + 64 * b + 8 * c + d] = 1
+            valids[int(512 * a + 64 * b + 8 * c + d)] = 1
 
         return np.array(valids)
 
@@ -66,9 +78,12 @@ class GravityChessGame(Game):
         # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
         # player = 1
         b = Board()
-        b.pieces = np.copy(board)
+        if isinstance(board[0], np.ndarray):
+            b.pieces = copy.deepcopy(pieces_from_canonical(board))
+        else:
+            b.pieces = copy.deepcopy(board)
 
-        if not b.is_tie():
+        if b.is_tie():
             return 1e-4
 
         return b.get_winner()
@@ -94,7 +109,7 @@ class GravityChessGame(Game):
 
     def getScore(self, board, player):
         b = Board()
-        b.pieces = np.copy(board)
+        b.pieces = copy.deepcopy(board)
         return b.get_winner()
 
     @staticmethod
@@ -151,3 +166,5 @@ class GravityChessGame(Game):
             print()
 
         print("-----------------------------", end='')
+        print()
+        print()

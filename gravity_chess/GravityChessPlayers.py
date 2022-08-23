@@ -22,19 +22,27 @@ class HumanPhilosphersFootballPlayer():
         valid = self.game.getValidMoves(board, 1)
         for i in range(len(valid)):
             if valid[i]:
-                if i == 2 * self.game.rows * self.game.cols:
-                    print("[", 2 * self.game.rows, 0, "1 (end hopping)", end="] ")
-                else:
-                    print("[", int((i % (self.game.rows * self.game.cols)) / self.game.cols), i % self.game.cols,
-                      "2 (hop)" if not (i % (self.game.rows * self.game.cols) == i) else "1 (place)", end="] ")
+                action = i + 3 - 3
+
+                target_col = int(action % 8)
+                action -= target_col
+                action /= 8
+                target_row = int(action % 8)
+                action -= target_row
+                action /= 8
+                source_col = int(action % 8)
+                action -= source_col
+                action /= 8
+                source_row = int(action)
+
+                print("[", str(source_row), str(source_col), str(target_row), str(target_col), end="] ")
         while True:
             input_move = input()
             input_a = input_move.split(" ")
-            if len(input_a) == 3:
+            if len(input_a) == 4:
                 try:
-                    x, y, z = [int(i) for i in input_a]
-                    a = self.game.cols * x + y if z == 1 else (self.game.rows * self.game.cols) + (
-                                self.game.cols * x + y)
+                    w, x, y, z = [int(i) for i in input_a]
+                    a = 512 * w + 64 * x + 8 * y + z
                     if valid[a]:
                         break
                 except ValueError:
