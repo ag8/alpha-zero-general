@@ -13,6 +13,7 @@ x is the column, y is the row.
 
 import numpy as np
 
+
 class Piece():
     def __init__(self, type, row, col, color):
         self.type = type
@@ -50,7 +51,6 @@ class Board():
             self.pieces.append(Piece(self._BISHOP, i, 5, 1 if i == 0 else -1))
             self.pieces.append(Piece(self._KNIGHT, i, 6, 1 if i == 0 else -1))
             self.pieces.append(Piece(self._ROOK, i, 7, 1 if i == 0 else -1))
-
 
         # Other game state variables
         # TODO: These game state variables currently:
@@ -462,7 +462,7 @@ class Board():
                 # Long castling
                 if self.get_piece_on(row, col + 1) is None and self.get_piece_on(row,
                                                                                  col + 2) is None and self.get_piece_on(
-                        row, col + 3) is None and self.long_castling_allowed:
+                    row, col + 3) is None and self.long_castling_allowed:
                     moves.append([row, col + 2])
 
                 # Short castling
@@ -543,6 +543,20 @@ class Board():
         # Check if the piece is a promoted pawn
         if current_piece.color == 1 and current_piece.row == 7 and current_piece.type == self._PAWN or current_piece.color == -1 and current_piece.row == 0 and current_piece.type == self._PAWN:
             current_piece.type = self._QUEEN  # for simplicity
+
+        # Add gravity!!!!!!!
+        for i in range(8):
+            for piece in self.pieces:
+                if piece.type == self._PAWN:
+                    continue
+
+                below_row = piece.row + 1
+                col = piece.col
+
+                if self.get_piece_on(below_row, col) is None:
+                    if self.on_board(below_row, col):
+                        piece.row = below_row
+                        piece.col = col
 
     def is_tie(self):
         return False  # Todo implement
