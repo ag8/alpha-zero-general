@@ -4,10 +4,12 @@ import sys
 import coloredlogs
 
 from Coach import Coach
-from othello.OthelloGame import OthelloGame as Game
-from othello.pytorch.NNet import NNetWrapper as nn
+# from othello.OthelloGame import OthelloGame as Game
+# from othello.pytorch.NNet import NNetWrapper as nn
 # from philosophers_football.PhilosophersFootballGame import PhilosophersFootballGame as Game
 # from philosophers_football.pytorch.NNet import NNetWrapper as nn
+from gravity_chess.GravityChessGame import GravityChessGame as Game
+from gravity_chess.pytorch.NNet import NNetWrapper as nn
 from utils import *
 
 log = logging.getLogger(__name__)
@@ -37,7 +39,7 @@ def main():
     sys.setrecursionlimit(10000)
     # g = Game(7, 11)
     # g = Game(5, 8)
-    g = Game(8)
+    g = Game()
 
     log.info('Loading %s...', nn.__name__)
     nnet = nn(g)

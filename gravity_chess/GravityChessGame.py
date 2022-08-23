@@ -75,7 +75,13 @@ class GravityChessGame(Game):
 
     def getCanonicalForm(self, board, player):
         b = copy.deepcopy(board)
-        return b * player
+
+        new_board = np.zeros([8, 8])
+
+        for piece in b:
+            new_board[piece.row][piece.col] = piece.type if piece.color == 1 else -piece.type
+
+        return new_board * player
 
     def getSymmetries(self, board, pi):
         # Vertical mirroring; omit for now
@@ -93,45 +99,51 @@ class GravityChessGame(Game):
 
     @staticmethod
     def display(board):
-        rows = len(board) - 2
-        cols = len(board[0])
+        rows = 8
+        cols = 8
         print("   ", end="")
         for y in range(cols):
-            print(y, end=" ")
+            print(chr(ord('H') - y), end=" ")
         print("")
         print("-----------------------------")
         for row in range(rows):
-            print(chr(ord('A') + row), "|", end="")  # print the row name
+            print(str(row + 1), "|", end="")  # print the row name
             for col in range(cols):
-                if board[row][col] is None:
+                current_piece = None
+
+                for piece in board:
+                    if piece.row == row and piece.col == col:
+                        current_piece = piece
+
+                if current_piece is None:
                     print(". ", end='')
-                elif board[row][col].type == 1:
-                    if board[row][col].color == 1:
+                elif current_piece.type == 1:
+                    if current_piece.color == 1:
                         print("♙ ", end='')
                     else:
                         print("♟ ", end='')
-                elif board[row][col].type == 2:
-                    if board[row][col].color == 1:
+                elif current_piece.type == 2:
+                    if current_piece.color == 1:
                         print("♘ ", end='')
                     else:
                         print("♞ ", end='')
-                elif board[row][col].type == 3:
-                    if board[row][col].color == 1:
+                elif current_piece.type == 3:
+                    if current_piece.color == 1:
                         print("♗ ", end='')
                     else:
                         print("♝ ", end='')
-                elif board[row][col].type == 4:
-                    if board[row][col].color == 1:
+                elif current_piece.type == 4:
+                    if current_piece.color == 1:
                         print("♖ ", end='')
                     else:
                         print("♜ ", end='')
-                elif board[row][col].type == 5:
-                    if board[row][col].color == 1:
+                elif current_piece.type == 5:
+                    if current_piece.color == 1:
                         print("♕ ", end='')
                     else:
                         print("♛ ", end='')
-                elif board[row][col].type == 6:
-                    if board[row][col].color == 1:
+                elif current_piece.type == 6:
+                    if current_piece.color == 1:
                         print("♔ ", end='')
                     else:
                         print("♚ ", end='')
@@ -139,5 +151,3 @@ class GravityChessGame(Game):
             print()
 
         print("-----------------------------", end='')
-        print("    already hopped: " + str(board[rows][0] == 1), end='')
-        print("    turn player: " + str(board[rows + 1][0]))

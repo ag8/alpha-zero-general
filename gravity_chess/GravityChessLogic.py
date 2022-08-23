@@ -41,14 +41,24 @@ class Board():
             self.pieces.append(Piece(self._PAWN, 6, i, -1))
 
         for i in [0, 7]:
-            self.pieces.append(Piece(self._ROOK, i, 0, 1 if i is 0 else -1))
-            self.pieces.append(Piece(self._KNIGHT, i, 1, 1 if i is 0 else -1))
-            self.pieces.append(Piece(self._BISHOP, i, 2, 1 if i is 0 else -1))
-            self.pieces.append(Piece(self._KING, i, 3, 1 if i is 0 else -1))
-            self.pieces.append(Piece(self._QUEEN, i, 4, 1 if i is 0 else -1))
-            self.pieces.append(Piece(self._BISHOP, i, 5, 1 if i is 0 else -1))
-            self.pieces.append(Piece(self._KING, i, 6, 1 if i is 0 else -1))
-            self.pieces.append(Piece(self._ROOK, i, 7, 1 if i is 0 else -1))
+            self.pieces.append(Piece(self._ROOK, i, 0, 1 if i == 0 else -1))
+            self.pieces.append(Piece(self._KNIGHT, i, 1, 1 if i == 0 else -1))
+            self.pieces.append(Piece(self._BISHOP, i, 2, 1 if i == 0 else -1))
+            self.pieces.append(Piece(self._KING, i, 3, 1 if i == 0 else -1))
+            self.pieces.append(Piece(self._QUEEN, i, 4, 1 if i == 0 else -1))
+            self.pieces.append(Piece(self._BISHOP, i, 5, 1 if i == 0 else -1))
+            self.pieces.append(Piece(self._KING, i, 6, 1 if i == 0 else -1))
+            self.pieces.append(Piece(self._ROOK, i, 7, 1 if i == 0 else -1))
+
+
+        # Other game state variables
+        self.short_castling_allowed = True
+        self.long_castling_allowed = True
+        self.en_passant_allowed = True
+        self.en_passant_target_col = -1
+        self.en_passant_target_row = -1
+        self.en_passant_victim_col = -1
+        self.en_passant_victim_row = -1
 
     # add [][] indexer syntax to the Board
     def __getitem__(self, tup):
@@ -75,7 +85,7 @@ class Board():
         if piece.type == self._PAWN:
             if piece.color == 1:
                 if self.get_piece_on(row + 1, col) is None:
-                    if row is not 6:
+                    if row != 6:
                         moves.append([row + 1, col])
 
                 if row == 1:
@@ -97,7 +107,7 @@ class Board():
                         moves.append([row + 1, col - 1])
             else:
                 if self.get_piece_on(row - 1, col) is None:
-                    if row is not 1:
+                    if row != 1:
                         moves.append([row + 1, col])
 
                 if row == 6:
@@ -494,9 +504,9 @@ class Board():
             self.short_castling_allowed = False
             self.long_castling_allowed = False
         if current_piece.type is self._ROOK:
-            if current_piece.col is 0:
+            if current_piece.col == 0:
                 self.short_castling_allowed = False
-            elif current_piece.col is 7:
+            elif current_piece.col == 7:
                 self.long_castling_allowed = False
 
         # Move piece
