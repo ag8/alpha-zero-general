@@ -19,7 +19,7 @@ class HumanPhilosphersFootballPlayer():
 
     def play(self, board):
         # display(board)
-        valid = self.game.getValidMoves(board, 1)
+        valid = self.game.getValidMoves(board, -1)
         for i in range(len(valid)):
             if valid[i]:
                 action = i + 3 - 3
@@ -45,6 +45,8 @@ class HumanPhilosphersFootballPlayer():
                     a = 512 * w + 64 * x + 8 * y + z
                     if valid[a]:
                         break
+                    else:
+                        print('Invalid move')
                 except ValueError:
                     # Input needs to be an integer
                     'Invalid integer'

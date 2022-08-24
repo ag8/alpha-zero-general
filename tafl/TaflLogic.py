@@ -9,7 +9,7 @@ class Board():
       self.width=gv.size
       self.height=gv.size
       self.board=gv.board #[x,y,type]
-      self.pieces=gv.pieces #[x,y,type]
+      self.pieces=gv.internal_pieces #[x,y,type]
       self.time=0
       self.done=0
 

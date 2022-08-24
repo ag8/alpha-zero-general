@@ -5,18 +5,9 @@ import sys
 
 sys.path.append('..')
 from Game import Game
-from .GravityChessLogic import Board, Piece
+from .GravityChessLogic import Board
 import numpy as np
 
-def pieces_from_canonical(canonical_board):
-    pieces = []
-
-    for row in range(8):
-        for col in range(8):
-            if abs(canonical_board[row][col]) > 0:
-                pieces.append(Piece(int(abs(canonical_board[row][col])), row, col, 1 if canonical_board[row][col] > 0 else -1))
-
-    return pieces
 
 class GravityChessGame(Game):
     def __init__(self):
@@ -25,11 +16,11 @@ class GravityChessGame(Game):
     def getInitBoard(self):
         # return initial board (numpy board)
         b = Board()
-        return np.array(b.pieces)
+        return b.board_rep
 
     def getBoardSize(self):
         # (a,b) tuple
-        return 8, 8
+        return 8, 10
 
     def getActionSize(self):
         # return number of actions
@@ -39,10 +30,7 @@ class GravityChessGame(Game):
         # if player takes action on board, return next (board,player)
         # action must be a valid move
         b = Board()
-        if isinstance(board[0], np.ndarray):
-            b.pieces = copy.deepcopy(pieces_from_canonical(board))
-        else:
-            b.pieces = copy.deepcopy(board)
+        b.load_info(board)  # todo might also need to custom load player??
 
         target_col = int(action % 8)
         action -= target_col
@@ -59,15 +47,15 @@ class GravityChessGame(Game):
 
         b.execute_move(move, player)
 
-        return b.pieces, -player
+        return b.board_rep, -player
 
     def getValidMoves(self, board, player):
         # return a fixed size binary vector
         valids = [0] * self.getActionSize()
         b = Board()
-        b.pieces = copy.deepcopy(pieces_from_canonical(board))
+        b.load_info(board)  # todo same
 
-        moves = b.get_legal_moves(player)
+        moves = b.get_legal_moves(b.player_turn)
 
         for a, b, c, d in moves:
             valids[int(512 * a + 64 * b + 8 * c + d)] = 1
@@ -78,10 +66,11 @@ class GravityChessGame(Game):
         # return 0 if not ended, 1 if player 1 won, -1 if player 1 lost
         # player = 1
         b = Board()
-        if isinstance(board[0], np.ndarray):
-            b.pieces = copy.deepcopy(pieces_from_canonical(board))
-        else:
-            b.pieces = copy.deepcopy(board)
+        # if isinstance(board[0], np.ndarray):
+        #     b.pieces = copy.deepcopy(pieces_from_canonical(board))
+        #     b.player_turn = board[8][0]
+        # else:
+        b.load_info(board)
 
         if b.is_tie():
             return 1e-4
@@ -90,13 +79,7 @@ class GravityChessGame(Game):
 
     def getCanonicalForm(self, board, player):
         b = copy.deepcopy(board)
-
-        new_board = np.zeros([8, 8])
-
-        for piece in b:
-            new_board[piece.row][piece.col] = piece.type if piece.color == 1 else -piece.type
-
-        return new_board * player
+        return b
 
     def getSymmetries(self, board, pi):
         # Vertical mirroring; omit for now
@@ -109,62 +92,59 @@ class GravityChessGame(Game):
 
     def getScore(self, board, player):
         b = Board()
-        b.pieces = copy.deepcopy(board)
+        b.load_info(board)
         return b.get_winner()
 
     @staticmethod
     def display(board):
-        rows = 8
-        cols = 8
-        print("   ", end="")
-        for y in range(cols):
-            print(chr(ord('H') - y), end=" ")
-        print("")
-        print("-----------------------------")
-        for row in range(rows):
-            print(str(row + 1), "|", end="")  # print the row name
-            for col in range(cols):
-                current_piece = None
+        if isinstance(board, np.ndarray):
+            rows = 8
+            cols = 8
+            print("   ", end="")
+            for y in range(cols):
+                print(chr(ord('H') - y), end=" ")
+            print("")
+            print("-----------------------------")
+            for row in range(rows):
+                print(str(row + 1), "|", end="")  # print the row name
+                for col in range(cols):
+                    if abs(board[row][col]) == 0:
+                        print(". ", end='')
+                    elif abs(board[row][col]) == 1:
+                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
+                            print("♙ ", end='')
+                        else:
+                            print("♟ ", end='')
+                    elif abs(board[row][col]) == 2:
+                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
+                            print("♘ ", end='')
+                        else:
+                            print("♞ ", end='')
+                    elif abs(board[row][col]) == 3:
+                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
+                            print("♗ ", end='')
+                        else:
+                            print("♝ ", end='')
+                    elif abs(board[row][col]) == 4:
+                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
+                            print("♖ ", end='')
+                        else:
+                            print("♜ ", end='')
+                    elif abs(board[row][col]) == 5:
+                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
+                            print("♕ ", end='')
+                        else:
+                            print("♛ ", end='')
+                    elif abs(board[row][col]) == 6:
+                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
+                            print("♔ ", end='')
+                        else:
+                            print("♚ ", end='')
 
-                for piece in board:
-                    if piece.row == row and piece.col == col:
-                        current_piece = piece
-
-                if current_piece is None:
-                    print(". ", end='')
-                elif current_piece.type == 1:
-                    if current_piece.color == 1:
-                        print("♙ ", end='')
-                    else:
-                        print("♟ ", end='')
-                elif current_piece.type == 2:
-                    if current_piece.color == 1:
-                        print("♘ ", end='')
-                    else:
-                        print("♞ ", end='')
-                elif current_piece.type == 3:
-                    if current_piece.color == 1:
-                        print("♗ ", end='')
-                    else:
-                        print("♝ ", end='')
-                elif current_piece.type == 4:
-                    if current_piece.color == 1:
-                        print("♖ ", end='')
-                    else:
-                        print("♜ ", end='')
-                elif current_piece.type == 5:
-                    if current_piece.color == 1:
-                        print("♕ ", end='')
-                    else:
-                        print("♛ ", end='')
-                elif current_piece.type == 6:
-                    if current_piece.color == 1:
-                        print("♔ ", end='')
-                    else:
-                        print("♚ ", end='')
+                print()
 
             print()
-
-        print("-----------------------------", end='')
-        print()
-        print()
+            print("Current turn: " + str(int(board[8][0])))
+            print("-----------------------------", end='')
+            print()
+            print()

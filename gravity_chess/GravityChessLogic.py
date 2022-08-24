@@ -35,22 +35,22 @@ class Board():
         self.board_size = 8
         self.s = self.board_size  # short alias
 
-        self.pieces = list()
+        self.internal_pieces = list()
 
         # Set up the initial board position
         for i in range(8):
-            self.pieces.append(Piece(self._PAWN, 1, i, 1))
-            self.pieces.append(Piece(self._PAWN, 6, i, -1))
+            self.internal_pieces.append(Piece(self._PAWN, 1, i, 1))
+            self.internal_pieces.append(Piece(self._PAWN, 6, i, -1))
 
         for i in [0, 7]:
-            self.pieces.append(Piece(self._ROOK, i, 0, 1 if i == 0 else -1))
-            self.pieces.append(Piece(self._KNIGHT, i, 1, 1 if i == 0 else -1))
-            self.pieces.append(Piece(self._BISHOP, i, 2, 1 if i == 0 else -1))
-            self.pieces.append(Piece(self._KING, i, 3, 1 if i == 0 else -1))
-            self.pieces.append(Piece(self._QUEEN, i, 4, 1 if i == 0 else -1))
-            self.pieces.append(Piece(self._BISHOP, i, 5, 1 if i == 0 else -1))
-            self.pieces.append(Piece(self._KNIGHT, i, 6, 1 if i == 0 else -1))
-            self.pieces.append(Piece(self._ROOK, i, 7, 1 if i == 0 else -1))
+            self.internal_pieces.append(Piece(self._ROOK, i, 0, 1 if i == 0 else -1))
+            self.internal_pieces.append(Piece(self._KNIGHT, i, 1, 1 if i == 0 else -1))
+            self.internal_pieces.append(Piece(self._BISHOP, i, 2, 1 if i == 0 else -1))
+            self.internal_pieces.append(Piece(self._KING, i, 3, 1 if i == 0 else -1))
+            self.internal_pieces.append(Piece(self._QUEEN, i, 4, 1 if i == 0 else -1))
+            self.internal_pieces.append(Piece(self._BISHOP, i, 5, 1 if i == 0 else -1))
+            self.internal_pieces.append(Piece(self._KNIGHT, i, 6, 1 if i == 0 else -1))
+            self.internal_pieces.append(Piece(self._ROOK, i, 7, 1 if i == 0 else -1))
 
         # Other game state variables
         # TODO: These game state variables currently:
@@ -65,13 +65,67 @@ class Board():
         self.en_passant_victim_col = -1
         self.en_passant_victim_row = -1
 
+        self.player_turn = 1
+
+        self.board_rep = np.zeros([10, 8])
+
+        for piece in self.internal_pieces:
+            self.board_rep[piece.row][piece.col] = piece.type if piece.color == 1 else -piece.type
+
+        self.board_rep[8] = [self.player_turn] * 8
+        self.board_rep[9][0] = self.short_castling_allowed
+        self.board_rep[9][1] = self.long_castling_allowed
+        self.board_rep[9][2] = self.en_passant_allowed
+        self.board_rep[9][3] = self.en_passant_target_row
+        self.board_rep[9][4] = self.en_passant_target_col
+        self.board_rep[9][5] = self.en_passant_victim_row
+        self.board_rep[9][6] = self.en_passant_victim_col
+
     # add [][] indexer syntax to the Board
-    def __getitem__(self, tup):
-        y, x = tup
-        return self.get_piece_on(x, y)
+    # def __getitem__(self, tup):
+    #     y, x = tup
+    #     return self.get_piece_on(x, y)
+
+    def load_info(self, board, player=None):
+        self.internal_pieces = list()
+
+        for row in range(8):
+            for col in range(8):
+                if abs((board[row][col])) > 0:
+                    self.internal_pieces.append(Piece(int(abs(board[row][col])), row, col, 1 if board[row][col] > 0 else -1))
+
+        if player is None:
+            self.player_turn = board[8][0]
+        else:
+            self.player_turn = player
+
+        self.short_castling_allowed = self.board_rep[9][0]
+        self.long_castling_allowed = self.board_rep[9][1]
+        self.en_passant_allowed = self.board_rep[9][2]
+        self.en_passant_target_row = self.board_rep[9][3]
+        self.en_passant_target_col = self.board_rep[9][4]
+        self.en_passant_victim_row = self.board_rep[9][5]
+        self.en_passant_victim_col = self.board_rep[9][6]
+
+        self.update_board_representation()
+
+    def update_board_representation(self):
+        self.board_rep = np.zeros([10, 8])
+
+        for piece in self.internal_pieces:
+            self.board_rep[piece.row][piece.col] = piece.type if piece.color == 1 else -piece.type
+
+        self.board_rep[8] = [self.player_turn] * 8
+        self.board_rep[9][0] = self.short_castling_allowed
+        self.board_rep[9][1] = self.long_castling_allowed
+        self.board_rep[9][2] = self.en_passant_allowed
+        self.board_rep[9][3] = self.en_passant_target_col
+        self.board_rep[9][4] = self.en_passant_target_row
+        self.board_rep[9][5] = self.en_passant_victim_col
+        self.board_rep[9][6] = self.en_passant_victim_row
 
     def get_piece_on(self, row, col):
-        for piece in self.pieces:
+        for piece in self.internal_pieces:
             if piece.row == row and piece.col == col:
                 return piece
 
@@ -113,7 +167,7 @@ class Board():
             else:
                 if self.get_piece_on(row - 1, col) is None:
                     if row != 1:
-                        moves.append([row + 1, col])
+                        moves.append([row - 1, col])
 
                 if row == 6:
                     if self.get_piece_on(row - 1, col) is None and self.get_piece_on(row - 2, col) is None:
@@ -123,14 +177,14 @@ class Board():
                         row - 1 == self.en_passant_target_row and col + 1 == self.en_passant_target_col and self.en_passant_allowed):
                     if self.get_piece_on(row - 1, col + 1) is None:  # en passant
                         moves.append([row - 1, col + 1])
-                    elif self.get_piece_on(row - 1, col + 1).color == -1:
+                    elif self.get_piece_on(row - 1, col + 1).color == 1:
                         moves.append([row - 1, col + 1])
 
                 if self.get_piece_on(row - 1, col - 1) is not None or (
                         row - 1 == self.en_passant_target_row and col - 1 == self.en_passant_target_col and self.en_passant_allowed):
                     if self.get_piece_on(row - 1, col - 1) is None:  # en passant
                         moves.append([row - 1, col - 1])
-                    elif self.get_piece_on(row - 1, col - 1).color == -1:
+                    elif self.get_piece_on(row - 1, col - 1).color == 1:
                         moves.append([row - 1, col - 1])
 
         if piece.type == self._ROOK:
@@ -479,7 +533,7 @@ class Board():
         moves = set()  # stores the legal moves.
 
         # Iterate through all the pieces
-        for piece in self.pieces:
+        for piece in self.internal_pieces:
             if piece.color == color:  # if it's the right color
                 for move in self.get_moves(piece):
                     moves.add((piece.row, piece.col, move[0], move[1]))
@@ -498,12 +552,12 @@ class Board():
         captured_piece = self.get_piece_on(target_row, target_col)
 
         if captured_piece is not None:
-            self.pieces = np.delete(self.pieces, np.where(self.pieces == captured_piece))
+            self.internal_pieces = np.delete(self.internal_pieces, np.where(self.internal_pieces == captured_piece))
 
         # Check for the french move
         if self.en_passant_allowed and target_row is self.en_passant_target_row and target_col is self.en_passant_target_col and current_piece.type is self._PAWN:
             frenched_pawn = self.get_piece_on(self.en_passant_target_row, self.en_passant_target_col)
-            self.pieces = np.delete(self.pieces, np.where(self.pieces == frenched_pawn))
+            self.internal_pieces = np.delete(self.internal_pieces, np.where(self.internal_pieces == frenched_pawn))
 
         if current_piece.type is self._KING:
             self.short_castling_allowed = False
@@ -546,7 +600,7 @@ class Board():
 
         # Add gravity!!!!!!!
         for i in range(8):
-            for piece in self.pieces:
+            for piece in self.internal_pieces[:32]:
                 if piece.type == self._PAWN:
                     continue
 
@@ -558,6 +612,12 @@ class Board():
                         piece.row = below_row
                         piece.col = col
 
+        # Next move time
+        self.player_turn = -color
+
+        # Update board representation
+        self.update_board_representation()
+
     def is_tie(self):
         return False  # Todo implement
 
@@ -565,7 +625,7 @@ class Board():
         white_lost = True
         black_lost = True
 
-        for piece in self.pieces:
+        for piece in self.internal_pieces:
             if piece.type == self._KING and piece.color == 1:
                 white_lost = False
             if piece.type == self._KING and piece.color == -1:
