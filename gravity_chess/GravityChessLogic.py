@@ -553,6 +553,17 @@ class Board():
         # Get the piece
         current_piece = self.get_piece_on(start_row, start_col)
 
+        if current_piece is None:
+            print("current piece is none!")
+            print("Game state is this:")
+            print(self.board_rep)
+            print()
+            print("Attempted action was:")
+            print(start_row, start_col, target_row, target_col)
+            print("Skipping for now, but this should be figured out and fixed.")
+            self.stupid_moves += 1
+            return
+
         # See if there's a capture
         captured_piece = self.get_piece_on(target_row, target_col)
 
