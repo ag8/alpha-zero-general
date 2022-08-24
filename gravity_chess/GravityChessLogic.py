@@ -618,6 +618,8 @@ class Board():
         # Update board representation
         self.update_board_representation()
 
+        return
+
     def is_tie(self):
         return False  # Todo implement
 

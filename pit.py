@@ -48,8 +48,8 @@ hp = HumanPhilosphersFootballPlayer(g).play
 #
 #     player2 = n2p  # Player 2 is neural network if it's cpu vs cpu.
 
-# n1p = rp
-n1p = hp
+n1p = rp
+# n1p = hp
 player2 = hp
 
 arena = Arena.Arena(n1p, player2, g, display=GravityChessGame.display)
