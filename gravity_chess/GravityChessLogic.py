@@ -594,13 +594,15 @@ class Board():
         # Long
         if current_piece.type is self._KING and target_col - start_col == 2:
             corresponding_rook = self.get_piece_on(7, 0)
-            corresponding_rook.row = 0
-            corresponding_rook.col = 4
+            if corresponding_rook is not None:
+                corresponding_rook.row = 0
+                corresponding_rook.col = 4
         # Short
         if current_piece.type is self._KING and target_col - start_col == -2:
             corresponding_rook = self.get_piece_on(0, 0)
-            corresponding_rook.row = 0
-            corresponding_rook.col = 2
+            if corresponding_rook is not None:
+                corresponding_rook.row = 0
+                corresponding_rook.col = 2
 
         # Check if the piece is a pawn that went two squares
         if current_piece.type is self._PAWN and abs(target_row - start_row) == 2:
