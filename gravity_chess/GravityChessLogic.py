@@ -561,8 +561,9 @@ class Board():
             print("Attempted action was:")
             print(start_row, start_col, target_row, target_col)
             print("Making it a draw for now, but this should be figured out and fixed.")
+            current_piece = self.internal_pieces[0]
             self.stupid_moves = 100000
-            return
+            # return
 
         # See if there's a capture
         captured_piece = self.get_piece_on(target_row, target_col)
