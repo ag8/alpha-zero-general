@@ -560,8 +560,8 @@ class Board():
             print()
             print("Attempted action was:")
             print(start_row, start_col, target_row, target_col)
-            print("Skipping for now, but this should be figured out and fixed.")
-            self.stupid_moves += 1
+            print("Making it a draw for now, but this should be figured out and fixed.")
+            self.stupid_moves = 100000
             return
 
         # See if there's a capture
