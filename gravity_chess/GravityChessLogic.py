@@ -67,6 +67,8 @@ class Board():
 
         self.player_turn = 1
 
+        self.stupid_moves = 0
+
         self.board_rep = np.zeros([10, 8])
 
         for piece in self.internal_pieces:
@@ -80,6 +82,7 @@ class Board():
         self.board_rep[9][4] = self.en_passant_target_col
         self.board_rep[9][5] = self.en_passant_victim_row
         self.board_rep[9][6] = self.en_passant_victim_col
+        self.board_rep[9][7] = self.stupid_moves
 
     # add [][] indexer syntax to the Board
     # def __getitem__(self, tup):
@@ -99,13 +102,14 @@ class Board():
         else:
             self.player_turn = player
 
-        self.short_castling_allowed = self.board_rep[9][0]
-        self.long_castling_allowed = self.board_rep[9][1]
-        self.en_passant_allowed = self.board_rep[9][2]
-        self.en_passant_target_row = self.board_rep[9][3]
-        self.en_passant_target_col = self.board_rep[9][4]
-        self.en_passant_victim_row = self.board_rep[9][5]
-        self.en_passant_victim_col = self.board_rep[9][6]
+        self.short_castling_allowed = board[9][0]
+        self.long_castling_allowed = board[9][1]
+        self.en_passant_allowed = board[9][2]
+        self.en_passant_target_row = board[9][3]
+        self.en_passant_target_col = board[9][4]
+        self.en_passant_victim_row = board[9][5]
+        self.en_passant_victim_col = board[9][6]
+        self.stupid_moves = board[9][7]
 
         self.update_board_representation()
 
@@ -123,6 +127,7 @@ class Board():
         self.board_rep[9][4] = self.en_passant_target_row
         self.board_rep[9][5] = self.en_passant_victim_col
         self.board_rep[9][6] = self.en_passant_victim_row
+        self.board_rep[9][7] = self.stupid_moves
 
     def get_piece_on(self, row, col):
         for piece in self.internal_pieces:
@@ -553,6 +558,7 @@ class Board():
 
         if captured_piece is not None:
             self.internal_pieces = np.delete(self.internal_pieces, np.where(self.internal_pieces == captured_piece))
+            # self.stupid_moves = 0
 
         # Check for the french move
         if self.en_passant_allowed and target_row is self.en_passant_target_row and target_col is self.en_passant_target_col and current_piece.type is self._PAWN:
@@ -597,6 +603,7 @@ class Board():
         # Check if the piece is a promoted pawn
         if current_piece.color == 1 and current_piece.row == 7 and current_piece.type == self._PAWN or current_piece.color == -1 and current_piece.row == 0 and current_piece.type == self._PAWN:
             current_piece.type = self._QUEEN  # for simplicity
+            # self.stupid_moves = 0
 
         # Add gravity!!!!!!!
         for i in range(8):
@@ -615,13 +622,15 @@ class Board():
         # Next move time
         self.player_turn = -color
 
+        self.stupid_moves += 0.1
+
         # Update board representation
         self.update_board_representation()
 
         return
 
     def is_tie(self):
-        return False  # Todo implement
+        return self.stupid_moves > 10
 
     def get_winner(self):
         white_lost = True

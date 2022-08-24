@@ -50,7 +50,7 @@ hp = HumanPhilosphersFootballPlayer(g).play
 
 n1p = rp
 # n1p = hp
-player2 = hp
+player2 = rp
 
 arena = Arena.Arena(n1p, player2, g, display=GravityChessGame.display)
 

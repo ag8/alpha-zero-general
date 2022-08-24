@@ -1,5 +1,7 @@
+import inspect
 import logging
 import math
+import sys
 
 import numpy as np
 
@@ -123,6 +125,8 @@ class MCTS():
             next_s, next_player = self.game.getNextState(canonicalBoard, 1, a)
         except RecursionError:
             print("Recursion error!!")
+            print("Recursion limit is " + str(sys.getrecursionlimit()))
+            print("Current depth is " + str(len(inspect.stack(0))))
             print("Game state is this:")
             self.game.display(canonicalBoard)
             print()

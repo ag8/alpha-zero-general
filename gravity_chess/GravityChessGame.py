@@ -145,6 +145,7 @@ class GravityChessGame(Game):
 
             print()
             print("Current turn: " + str(int(board[8][0])))
+            print("Turns: " + str(int(board[9][7])))
             print("-----------------------------", end='')
             print()
             print()
