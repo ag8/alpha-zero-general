@@ -111,35 +111,35 @@ class GravityChessGame(Game):
                     if abs(board[row][col]) == 0:
                         print(". ", end='')
                     elif abs(board[row][col]) == 1:
-                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
-                            print("♙ ", end='')
+                        if (1 if board[row][col] > 0 else -1) == 1:
+                            print("P ", end='')
                         else:
-                            print("♟ ", end='')
+                            print("p ", end='')
                     elif abs(board[row][col]) == 2:
-                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
-                            print("♘ ", end='')
+                        if (1 if (board[row][col]) > 0 else -1) == 1:
+                            print("N ", end='')
                         else:
-                            print("♞ ", end='')
+                            print("n ", end='')
                     elif abs(board[row][col]) == 3:
-                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
-                            print("♗ ", end='')
+                        if (1 if (board[row][col]) > 0 else -1) == 1:
+                            print("B ", end='')
                         else:
-                            print("♝ ", end='')
+                            print("b ", end='')
                     elif abs(board[row][col]) == 4:
-                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
-                            print("♖ ", end='')
+                        if (1 if (board[row][col]) > 0 else -1) == 1:
+                            print("R ", end='')
                         else:
-                            print("♜ ", end='')
+                            print("r ", end='')
                     elif abs(board[row][col]) == 5:
-                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
-                            print("♕ ", end='')
+                        if (1 if (board[row][col]) > 0 else -1) == 1:
+                            print("Q ", end='')
                         else:
-                            print("♛ ", end='')
+                            print("q ", end='')
                     elif abs(board[row][col]) == 6:
-                        if (1 if abs(board[row][col]) > 0 else -1) == 1:
-                            print("♔ ", end='')
+                        if (1 if (board[row][col]) > 0 else -1) == 1:
+                            print("K ", end='')
                         else:
-                            print("♚ ", end='')
+                            print("k ", end='')
 
                 print()
 
