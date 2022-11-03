@@ -52,6 +52,6 @@ n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 # n1p = hp
 player2 = hp
 
-arena = Arena.Arena(n1p, player2, g, display=GravityChessGame.display)
+arena = Arena.Arena(rp, player2, g, display=GravityChessGame.display)
 
 print(arena.playGames(2, verbose=True))

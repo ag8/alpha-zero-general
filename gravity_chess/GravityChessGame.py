@@ -102,11 +102,13 @@ class GravityChessGame(Game):
             cols = 8
             print("   ", end="")
             for y in range(cols):
-                print(chr(ord('H') - y), end=" ")
+                # print(chr(ord('H') - y), end=" ")
+                print(str(y), end=" ")
             print("")
             print("-----------------------------")
             for row in range(rows):
-                print(str(row + 1), "|", end="")  # print the row name
+                # print(str(row + 1), "|", end="")  # print the row name
+                print(str(row), "|", end="")  # print the row name
                 for col in range(cols):
                     if abs(board[row][col]) == 0:
                         print(". ", end='')

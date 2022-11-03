@@ -577,10 +577,10 @@ class Board():
             frenched_pawn = self.get_piece_on(self.en_passant_target_row, self.en_passant_target_col)
             self.internal_pieces = np.delete(self.internal_pieces, np.where(self.internal_pieces == frenched_pawn))
 
-        if current_piece.type is self._KING:
+        if current_piece.type is self._KING and current_piece.color == 1:
             self.short_castling_allowed = False
             self.long_castling_allowed = False
-        if current_piece.type is self._ROOK:
+        if current_piece.type is self._ROOK and current_piece.color == 1:
             if current_piece.col == 0:
                 self.short_castling_allowed = False
             elif current_piece.col == 7:
@@ -592,13 +592,13 @@ class Board():
 
         # Check for castling
         # Long
-        if current_piece.type is self._KING and target_col - start_col == 2:
+        if current_piece.type is self._KING and target_col - start_col == 2 and current_piece.color == 1:
             corresponding_rook = self.get_piece_on(7, 0)
             if corresponding_rook is not None:
                 corresponding_rook.row = 0
                 corresponding_rook.col = 4
         # Short
-        if current_piece.type is self._KING and target_col - start_col == -2:
+        if current_piece.type is self._KING and target_col - start_col == -2 and current_piece.color == 1:
             corresponding_rook = self.get_piece_on(0, 0)
             if corresponding_rook is not None:
                 corresponding_rook.row = 0
