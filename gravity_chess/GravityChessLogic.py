@@ -95,7 +95,8 @@ class Board():
         for row in range(8):
             for col in range(8):
                 if abs((board[row][col])) > 0:
-                    self.internal_pieces.append(Piece(int(abs(board[row][col])), row, col, 1 if board[row][col] > 0 else -1))
+                    self.internal_pieces.append(
+                        Piece(int(abs(board[row][col])), row, col, 1 if board[row][col] > 0 else -1))
 
         if player is None:
             self.player_turn = board[8][0]
@@ -149,8 +150,8 @@ class Board():
         if piece.type == self._PAWN:
             if piece.color == 1:
                 if self.get_piece_on(row + 1, col) is None:
-                    if row != 6:
-                        moves.append([row + 1, col])
+                    # if row != 6:
+                    moves.append([row + 1, col])
 
                 if row == 1:
                     if self.get_piece_on(row + 1, col) is None and self.get_piece_on(row + 2, col) is None:
@@ -171,8 +172,8 @@ class Board():
                         moves.append([row + 1, col - 1])
             else:
                 if self.get_piece_on(row - 1, col) is None:
-                    if row != 1:
-                        moves.append([row - 1, col])
+                    # if row != 1:
+                    moves.append([row - 1, col])
 
                 if row == 6:
                     if self.get_piece_on(row - 1, col) is None and self.get_piece_on(row - 2, col) is None:
@@ -562,15 +563,22 @@ class Board():
             print(start_row, start_col, target_row, target_col)
             print("Making it a draw for now, but this should be figured out and fixed.")
             current_piece = self.internal_pieces[0]
-            self.stupid_moves = 100000
-            # return
+            self.stupid_moves = 100000  # return
 
         # See if there's a capture
         captured_piece = self.get_piece_on(target_row, target_col)
 
         if captured_piece is not None:
-            self.internal_pieces = np.delete(self.internal_pieces, np.where(self.internal_pieces == captured_piece))
-            # self.stupid_moves = 0
+            print("A capture is occurring!!!")
+            print("We go from " + str(len(self.internal_pieces)) + " pieces")
+
+            # Get index of piece to delete
+            for i in range(len(self.internal_pieces)):
+                if self.internal_pieces[i].row == target_row and self.internal_pieces[i].col == target_col:
+                    break
+
+            self.internal_pieces = np.delete(self.internal_pieces, i)  # self.stupid_moves = 0
+            print("To " + str(len(self.internal_pieces)) + " pieces.")
 
         # Check for the french move
         if self.en_passant_allowed and target_row is self.en_passant_target_row and target_col is self.en_passant_target_col and current_piece.type is self._PAWN:
@@ -616,8 +624,7 @@ class Board():
 
         # Check if the piece is a promoted pawn
         if current_piece.color == 1 and current_piece.row == 7 and current_piece.type == self._PAWN or current_piece.color == -1 and current_piece.row == 0 and current_piece.type == self._PAWN:
-            current_piece.type = self._QUEEN  # for simplicity
-            # self.stupid_moves = 0
+            current_piece.type = self._QUEEN  # for simplicity  # self.stupid_moves = 0
 
         # Add gravity!!!!!!!
         for i in range(8):
