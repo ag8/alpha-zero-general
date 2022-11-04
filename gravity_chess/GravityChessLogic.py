@@ -569,8 +569,8 @@ class Board():
         captured_piece = self.get_piece_on(target_row, target_col)
 
         if captured_piece is not None:
-            print("A capture is occurring!!!")
-            print("We go from " + str(len(self.internal_pieces)) + " pieces")
+            # print("A capture is occurring!!!")
+            # print("We go from " + str(len(self.internal_pieces)) + " pieces")
 
             # Get index of piece to delete
             for i in range(len(self.internal_pieces)):
@@ -578,7 +578,7 @@ class Board():
                     break
 
             self.internal_pieces = np.delete(self.internal_pieces, i)  # self.stupid_moves = 0
-            print("To " + str(len(self.internal_pieces)) + " pieces.")
+            # print("To " + str(len(self.internal_pieces)) + " pieces.")
 
         # Check for the french move
         if self.en_passant_allowed and target_row is self.en_passant_target_row and target_col is self.en_passant_target_col and current_piece.type is self._PAWN:
