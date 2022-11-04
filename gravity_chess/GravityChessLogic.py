@@ -551,6 +551,18 @@ class Board():
         """
         start_row, start_col, target_row, target_col = move
 
+        if int(512 * start_row + 64 * start_col + 8 * target_row + target_col) > 8 * 8 * 8 * 8 - 1:
+            # FOR NOW, count impossible moves as skips. TODO: figure out why this happens.
+
+            self.player_turn = -color
+
+            self.stupid_moves += 0.1
+
+            # Update board representation
+            self.update_board_representation()
+
+            return
+
         # Get the piece
         current_piece = self.get_piece_on(start_row, start_col)
 
