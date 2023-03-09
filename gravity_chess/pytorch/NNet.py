@@ -14,12 +14,21 @@ import torch.optim as optim
 
 from .OthelloNNet import OthelloNNet as onnet
 
+try:
+    import torch_xla
+    import torch_xla.core.xla_model as xm
+    xla_device = True
+except ImportError:
+    xla_device = False
+    pass
+
 args = dotdict({
     'lr': 0.001,
     'dropout': 0.3,
     'epochs': 50,
     'batch_size': 64,
     'cuda': torch.cuda.is_available(),
+    'xla': xla_device,
     'num_channels': 512,
 })
 
@@ -32,6 +41,9 @@ class NNetWrapper(NeuralNet):
 
         if args.cuda:
             self.nnet.cuda()
+
+        if args.xla:
+            self.nnet = self.nnet.to(xm.xla_device())
 
     def train(self, examples):
         """
@@ -58,6 +70,8 @@ class NNetWrapper(NeuralNet):
                 # predict
                 if args.cuda:
                     boards, target_pis, target_vs = boards.contiguous().cuda(), target_pis.contiguous().cuda(), target_vs.contiguous().cuda()
+                if args.xla:
+                    boards, target_pis, target_vs = boards.contiguous().to(xm.xla_device), target_pis.contiguous().to(xm.xla_device), target_vs.contiguous().to(xm.xla_device)
 
                 # compute output
                 out_pi, out_v = self.nnet(boards)
@@ -85,6 +99,7 @@ class NNetWrapper(NeuralNet):
         # preparing input
         board = torch.FloatTensor(board.astype(np.float64))
         if args.cuda: board = board.contiguous().cuda()
+        if args.xla: board = board.contiguous().to(xm.xla_device)
         board = board.view(1, self.board_x, self.board_y)
         self.nnet.eval()
         with torch.no_grad():

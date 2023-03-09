@@ -30,7 +30,7 @@ hp = HumanPhilosphersFootballPlayer(g).play
 # nnet players
 n1 = NNet(g)
 # if mini_othello:
-n1.load_checkpoint('./temp/','temp.pth.tar')
+n1.load_checkpoint('./temp/','/home/dyusha/gchessmodels/run1/best.pth.tar')
 # else:
 #     n1.load_checkpoint('./pretrained_models/othello/pytorch/','8x8_100checkpoints_best.pth.tar')2
 args1 = dotdict({'numMCTSSims': 50, 'cpuct':1.0})
@@ -52,6 +52,6 @@ n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 # n1p = hp
 player2 = hp
 
-arena = Arena.Arena(rp, player2, g, display=GravityChessGame.display)
+arena = Arena.Arena(n1p, player2, g, display=GravityChessGame.display)
 
 print(arena.playGames(2, verbose=True))
